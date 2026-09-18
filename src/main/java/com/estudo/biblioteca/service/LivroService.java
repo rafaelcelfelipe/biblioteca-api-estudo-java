@@ -6,6 +6,7 @@ import com.estudo.biblioteca.repository.LivroRepository;
 import com.estudo.biblioteca.model.Livro;
 import java.util.List;
 import java.util.Optional;
+import com.estudo.biblioteca.model.StatusLivro;
 
 @Service
 public class LivroService {
@@ -15,8 +16,11 @@ public class LivroService {
         this.livroRepository = livroRepository;
     }
 
-    public List<Livro> listar(){
-        return livroRepository.findAll();
+    public List<Livro> listar(StatusLivro status){
+        if (status == null){
+            return livroRepository.findAll();
+        }
+        return livroRepository.findByStatus(status);
     }
 
     public Optional<Livro> buscarPorId(Long id){

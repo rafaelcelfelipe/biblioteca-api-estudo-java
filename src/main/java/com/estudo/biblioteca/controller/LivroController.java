@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PutMapping;
+import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestParam;
+import com.estudo.biblioteca.model.StatusLivro;
 
 @RestController
 @RequestMapping("/livros")
@@ -24,8 +27,8 @@ public class LivroController {
     }
 
     @GetMapping()
-    public List<Livro> listar(){
-        return livroService.listar();
+    public List<Livro> listar(@RequestParam(required = false) StatusLivro status){
+        return livroService.listar(status);
     }
 
     @GetMapping("/{id}")
@@ -38,7 +41,7 @@ public class LivroController {
     }
 
     @PostMapping()
-    public Livro criar(@RequestBody Livro livro){
+    public Livro criar(@Valid@RequestBody Livro livro){
         return livroService.salvar(livro);
     }
 
@@ -53,7 +56,7 @@ public class LivroController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Livro> atualizar(@PathVariable Long id, @RequestBody Livro livro){
+    public ResponseEntity<Livro> atualizar(@PathVariable Long id, @Valid @RequestBody Livro livro){
         Optional<Livro> livroEditado = livroService.atualizar(id, livro);
         if (livroEditado.isEmpty()){
             return ResponseEntity.notFound().build();
