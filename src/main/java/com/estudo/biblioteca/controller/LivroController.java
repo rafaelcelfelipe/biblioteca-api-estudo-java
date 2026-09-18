@@ -33,11 +33,7 @@ public class LivroController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Livro> buscarPorId(@PathVariable Long id){
-        Optional<Livro> livro = livroService.buscarPorId(id);
-        if (livro.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(livro.get());
+        return ResponseEntity.ok(livroService.buscarPorId(id));
     }
 
     @PostMapping()
@@ -47,20 +43,12 @@ public class LivroController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id){
-        Optional<Livro> livro = livroService.buscarPorId(id);
-        if (livro.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
         livroService.deletar(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Livro> atualizar(@PathVariable Long id, @Valid @RequestBody Livro livro){
-        Optional<Livro> livroEditado = livroService.atualizar(id, livro);
-        if (livroEditado.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(livroEditado.get());
+        return ResponseEntity.ok(livroService.atualizar(id, livro));
     }
 }

@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import com.estudo.biblioteca.repository.LivroRepository;
 import com.estudo.biblioteca.model.Livro;
 import java.util.List;
-import java.util.Optional;
 import com.estudo.biblioteca.model.StatusLivro;
+import com.estudo.biblioteca.exception.RecursoNaoEncontradoException;
 
 @Service
 public class LivroService {
@@ -23,8 +23,8 @@ public class LivroService {
         return livroRepository.findByStatus(status);
     }
 
-    public Optional<Livro> buscarPorId(Long id){
-        return livroRepository.findById(id);
+    public Livro buscarPorId(Long id){
+        return livroRepository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Livro não encontrado com id: " + id));
     }
 
     public Livro salvar(Livro livro){
@@ -32,21 +32,17 @@ public class LivroService {
     }
 
     public void deletar(Long id){
+        buscarPorId(id);
         livroRepository.deleteById(id);
     }
 
-    public Optional<Livro> atualizar(Long id, Livro livro){
-        Optional<Livro> livroExistente = buscarPorId(id);
-        if (livroExistente.isEmpty()){
-            return Optional.empty();
-        }
+    public Livro atualizar(Long id, Livro livro){
+        Livro livroExistente = buscarPorId(id);
 
-        Livro existente = livroExistente.get();
+        livroExistente.setTitulo(livro.getTitulo());
+        livroExistente.setAutor(livro.getAutor());
+        livroExistente.setStatus(livro.getStatus());
 
-        existente.setTitulo(livro.getTitulo());
-        existente.setAutor(livro.getAutor());
-        existente.setStatus(livro.getStatus());
-
-        return Optional.of(salvar(existente));
+        return salvar(livroExistente);
     }
 }
