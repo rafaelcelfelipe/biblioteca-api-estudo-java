@@ -7,8 +7,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "livros")
@@ -16,11 +14,8 @@ public class Livro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank(message = "Título é obrigatório")
     private String titulo;
-    @NotBlank(message = "Autor é obrigatório")
     private String autor;
-    @NotNull(message = "Status é obrigatório")
     @Enumerated(EnumType.STRING)
     private StatusLivro status;
 

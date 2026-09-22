@@ -3,9 +3,7 @@ package com.estudo.biblioteca.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.estudo.biblioteca.service.LivroService;
-import com.estudo.biblioteca.model.Livro;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +14,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.estudo.biblioteca.model.StatusLivro;
+import com.estudo.biblioteca.dto.LivroResponse;
+import com.estudo.biblioteca.dto.LivroRequest;
 
 @RestController
 @RequestMapping("/livros")
@@ -27,17 +27,17 @@ public class LivroController {
     }
 
     @GetMapping()
-    public List<Livro> listar(@RequestParam(required = false) StatusLivro status){
+    public List<LivroResponse> listar(@RequestParam(required = false) StatusLivro status){
         return livroService.listar(status);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Livro> buscarPorId(@PathVariable Long id){
+    public ResponseEntity<LivroResponse> buscarPorId(@PathVariable Long id){
         return ResponseEntity.ok(livroService.buscarPorId(id));
     }
 
     @PostMapping()
-    public Livro criar(@Valid@RequestBody Livro livro){
+    public LivroResponse criar(@Valid @RequestBody LivroRequest livro){
         return livroService.salvar(livro);
     }
 
@@ -48,7 +48,7 @@ public class LivroController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Livro> atualizar(@PathVariable Long id, @Valid @RequestBody Livro livro){
+    public ResponseEntity<LivroResponse> atualizar(@PathVariable Long id, @Valid @RequestBody LivroRequest livro){
         return ResponseEntity.ok(livroService.atualizar(id, livro));
     }
 }

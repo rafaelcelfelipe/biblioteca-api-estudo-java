@@ -7,6 +7,9 @@ import com.estudo.biblioteca.model.Livro;
 import java.util.List;
 import com.estudo.biblioteca.model.StatusLivro;
 import com.estudo.biblioteca.exception.RecursoNaoEncontradoException;
+import com.estudo.biblioteca.mapper.LivroMapper;
+import com.estudo.biblioteca.dto.LivroResponse;
+import com.estudo.biblioteca.dto.LivroRequest;
 
 @Service
 public class LivroService {
@@ -16,33 +19,40 @@ public class LivroService {
         this.livroRepository = livroRepository;
     }
 
-    public List<Livro> listar(StatusLivro status){
+    public List<LivroResponse> listar(StatusLivro status){
+        List<Livro> livros;
         if (status == null){
-            return livroRepository.findAll();
+            livros = livroRepository.findAll();
+        } else {
+            livros = livroRepository.findByStatus(status);
         }
-        return livroRepository.findByStatus(status);
+        return livros.stream().map(LivroMapper::toResponse).toList();
     }
 
-    public Livro buscarPorId(Long id){
-        return livroRepository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Livro não encontrado com id: " + id));
+    public LivroResponse buscarPorId(Long id){
+        return LivroMapper.toResponse(buscarEntidade(id));
     }
 
-    public Livro salvar(Livro livro){
-        return livroRepository.save(livro);
+    public LivroResponse salvar(LivroRequest livroRequest){
+        return LivroMapper.toResponse(livroRepository.save(LivroMapper.toEntity(livroRequest)));
     }
 
     public void deletar(Long id){
-        buscarPorId(id);
+        buscarEntidade(id);
         livroRepository.deleteById(id);
     }
 
-    public Livro atualizar(Long id, Livro livro){
-        Livro livroExistente = buscarPorId(id);
+    public LivroResponse atualizar(Long id, LivroRequest livroRequest){
+        Livro livroExistente = buscarEntidade(id);
 
-        livroExistente.setTitulo(livro.getTitulo());
-        livroExistente.setAutor(livro.getAutor());
-        livroExistente.setStatus(livro.getStatus());
+        livroExistente.setTitulo(livroRequest.getTitulo());
+        livroExistente.setAutor(livroRequest.getAutor());
+        livroExistente.setStatus(livroRequest.getStatus());
 
-        return salvar(livroExistente);
+        return LivroMapper.toResponse(livroRepository.save(livroExistente));
+    }
+
+    private Livro buscarEntidade(Long id){
+        return livroRepository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Livro não encontrado com id: " + id));
     }
 }
