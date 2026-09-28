@@ -11,6 +11,9 @@ import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/autores")
@@ -34,5 +37,16 @@ public class AutorController {
     @GetMapping("/{id}")
     public AutorResponse buscarPorId(@PathVariable Long id){
         return autorService.buscarPorId(id);
+    }
+
+    @PutMapping("/{id}")
+    public AutorResponse atualizar(@PathVariable Long id, @Valid @RequestBody AutorRequest autorRequest){
+        return autorService.atualizar(id, autorRequest);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id){
+        autorService.deletar(id);
+        return ResponseEntity.noContent().build();
     }
 }

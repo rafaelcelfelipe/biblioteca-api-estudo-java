@@ -29,6 +29,19 @@ public class AutorService {
         return AutorMapper.toResponse(buscarEntidade(id));
     }
 
+    public void deletar(Long id){
+        buscarEntidade(id);
+        autorRepository.deleteById(id);
+    }
+
+    public AutorResponse atualizar(Long id, AutorRequest autorRequest){
+        Autor autorExistente = buscarEntidade(id);
+
+        autorExistente.setNome(autorRequest.getNome());
+
+        return AutorMapper.toResponse(autorRepository.save(autorExistente));
+    }
+
     private Autor buscarEntidade(Long id){
         return autorRepository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Autor não encontrado com o id: " + id));
     }
