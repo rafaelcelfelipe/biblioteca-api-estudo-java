@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.estudo.biblioteca.model.StatusLivro;
 import com.estudo.biblioteca.dto.LivroResponse;
 import com.estudo.biblioteca.dto.LivroRequest;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/livros")
+@Tag(name = "Livros", description = "CRUD de livros e filtro por status")
 public class LivroController {
     private final LivroService livroService;
 
