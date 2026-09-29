@@ -3,8 +3,10 @@ package com.estudo.biblioteca.service;
 import com.estudo.biblioteca.dto.LivroRequest;
 import com.estudo.biblioteca.dto.LivroResponse;
 import com.estudo.biblioteca.exception.RecursoNaoEncontradoException;
+import com.estudo.biblioteca.model.Autor;
 import com.estudo.biblioteca.model.Livro;
 import com.estudo.biblioteca.model.StatusLivro;
+import com.estudo.biblioteca.repository.AutorRepository;
 import com.estudo.biblioteca.repository.LivroRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +30,9 @@ class LivroServiceTest {
 
     @Mock
     private LivroRepository livroRepository;
+
+    @Mock
+    private AutorRepository autorRepository;
 
     @InjectMocks
     private LivroService livroService;
@@ -65,6 +70,7 @@ class LivroServiceTest {
 
         assertEquals(1L, response.getId());
         assertEquals("O Hobbit", response.getTitulo());
+        assertEquals("Tolkien", response.getAutor().getNome());
         assertEquals(StatusLivro.LENDO, response.getStatus());
     }
 
@@ -82,31 +88,48 @@ class LivroServiceTest {
 
     @Test
     void salvarPersisteRequestEDevolveResponseComId() {
+        Autor autor = autor(3L, "Tolkien");
+        when(autorRepository.findById(3L)).thenReturn(Optional.of(autor));
         when(livroRepository.save(any(Livro.class))).thenAnswer(invocation -> {
             Livro livro = invocation.getArgument(0);
             livro.setId(10L);
             return livro;
         });
 
-        LivroResponse response = livroService.salvar(request("O Hobbit", "Tolkien", StatusLivro.QUERO_LER));
+        LivroResponse response = livroService.salvar(request("O Hobbit", 3L, StatusLivro.QUERO_LER));
 
         assertEquals(10L, response.getId());
         assertEquals("O Hobbit", response.getTitulo());
-        assertEquals("Tolkien", response.getAutor());
+        assertEquals("Tolkien", response.getAutor().getNome());
         assertEquals(StatusLivro.QUERO_LER, response.getStatus());
         verify(livroRepository).save(any(Livro.class));
     }
 
     @Test
+    void salvarLancaExcecaoQuandoAutorNaoExiste() {
+        when(autorRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(
+                RecursoNaoEncontradoException.class,
+                () -> livroService.salvar(request("O Hobbit", 99L, StatusLivro.QUERO_LER))
+        );
+
+        verify(livroRepository, never()).save(any());
+    }
+
+    @Test
     void atualizarAlteraCamposQuandoLivroExiste() {
         Livro existente = entidade(1L, "O Hobbit", StatusLivro.QUERO_LER);
+        Autor novoAutor = autor(4L, "Herbert");
         when(livroRepository.findById(1L)).thenReturn(Optional.of(existente));
+        when(autorRepository.findById(4L)).thenReturn(Optional.of(novoAutor));
         when(livroRepository.save(existente)).thenReturn(existente);
 
-        LivroResponse response = livroService.atualizar(1L, request("O Senhor dos Anéis", "Tolkien", StatusLivro.LENDO));
+        LivroResponse response = livroService.atualizar(1L, request("Duna", 4L, StatusLivro.LENDO));
 
         assertEquals(1L, response.getId());
-        assertEquals("O Senhor dos Anéis", response.getTitulo());
+        assertEquals("Duna", response.getTitulo());
+        assertEquals("Herbert", response.getAutor().getNome());
         assertEquals(StatusLivro.LENDO, response.getStatus());
         verify(livroRepository).save(existente);
     }
@@ -117,7 +140,7 @@ class LivroServiceTest {
 
         assertThrows(
                 RecursoNaoEncontradoException.class,
-                () -> livroService.atualizar(99L, request("X", "Y", StatusLivro.LIDO))
+                () -> livroService.atualizar(99L, request("X", 3L, StatusLivro.LIDO))
         );
 
         verify(livroRepository, never()).save(any());
@@ -141,16 +164,22 @@ class LivroServiceTest {
         verify(livroRepository, never()).deleteById(any());
     }
 
+    private static Autor autor(Long id, String nome) {
+        Autor autor = new Autor(nome);
+        autor.setId(id);
+        return autor;
+    }
+
     private static Livro entidade(Long id, String titulo, StatusLivro status) {
-        Livro livro = new Livro(titulo, "Tolkien", status);
+        Livro livro = new Livro(titulo, autor(3L, "Tolkien"), status);
         livro.setId(id);
         return livro;
     }
 
-    private static LivroRequest request(String titulo, String autor, StatusLivro status) {
+    private static LivroRequest request(String titulo, Long autorId, StatusLivro status) {
         LivroRequest request = new LivroRequest();
         request.setTitulo(titulo);
-        request.setAutor(autor);
+        request.setAutorId(autorId);
         request.setStatus(status);
         return request;
     }

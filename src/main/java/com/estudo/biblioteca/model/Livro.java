@@ -7,6 +7,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.EnumType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 @Table(name = "livros")
@@ -15,14 +17,16 @@ public class Livro {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String titulo;
-    private String autor;
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
+    private Autor autor;
     @Enumerated(EnumType.STRING)
     private StatusLivro status;
 
     public Livro(){
     }
 
-    public Livro(String titulo, String autor, StatusLivro status){
+    public Livro(String titulo, Autor autor, StatusLivro status){
         this.titulo = titulo;
         this.autor = autor;
         this.status = status;
@@ -32,7 +36,7 @@ public class Livro {
         return titulo;
     }
 
-    public String getAutor() {
+    public Autor getAutor() {
         return autor;
     }
 
@@ -48,7 +52,7 @@ public class Livro {
         this.titulo = titulo;
     }
 
-    public void setAutor(String autor){
+    public void setAutor(Autor autor){
         this.autor = autor;
     }
 

@@ -1,5 +1,6 @@
 package com.estudo.biblioteca.repository;
 
+import com.estudo.biblioteca.model.Autor;
 import com.estudo.biblioteca.model.Livro;
 import com.estudo.biblioteca.model.StatusLivro;
 import org.junit.jupiter.api.Test;
@@ -17,10 +18,14 @@ class LivroRepositoryTest {
     @Autowired
     private LivroRepository livroRepository;
 
+    @Autowired
+    private AutorRepository autorRepository;
+
     @Test
     void findByStatusRetornaApenasLivrosComAqueleStatus() {
-        livroRepository.save(new Livro("O Hobbit", "Tolkien", StatusLivro.LENDO));
-        livroRepository.save(new Livro("Duna", "Herbert", StatusLivro.LIDO));
+        Autor autor = autorRepository.save(new Autor("Tolkien"));
+        livroRepository.save(new Livro("O Hobbit", autor, StatusLivro.LENDO));
+        livroRepository.save(new Livro("Duna", autor, StatusLivro.LIDO));
 
         List<Livro> lidos = livroRepository.findByStatus(StatusLivro.LIDO);
 
@@ -31,7 +36,8 @@ class LivroRepositoryTest {
 
     @Test
     void findByStatusRetornaListaVaziaQuandoNaoHaCorrespondencia() {
-        livroRepository.save(new Livro("O Hobbit", "Tolkien", StatusLivro.LENDO));
+        Autor autor = autorRepository.save(new Autor("Tolkien"));
+        livroRepository.save(new Livro("O Hobbit", autor, StatusLivro.LENDO));
 
         List<Livro> lidos = livroRepository.findByStatus(StatusLivro.LIDO);
 

@@ -2,14 +2,13 @@ package com.estudo.biblioteca.dto;
 
 import com.estudo.biblioteca.model.StatusLivro;
 
-
 public class LivroResponse {
     private Long id;
     private String titulo;
-    private String autor;
+    private AutorResponse autor;
     private StatusLivro status;
 
-    public LivroResponse(Long id, String titulo, String autor, StatusLivro status) {
+    public LivroResponse(Long id, String titulo, AutorResponse autor, StatusLivro status) {
         this.id = id;
         this.titulo = titulo;
         this.autor = autor;
@@ -24,7 +23,7 @@ public class LivroResponse {
         return titulo;
     }
 
-    public String getAutor() {
+    public AutorResponse getAutor() {
         return autor;
     }
 
@@ -40,7 +39,7 @@ public class LivroResponse {
         this.titulo = titulo;
     }
 
-    public void setAutor(String autor) {
+    public void setAutor(AutorResponse autor) {
         this.autor = autor;
     }
     

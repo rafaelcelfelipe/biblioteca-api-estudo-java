@@ -7,8 +7,8 @@ import jakarta.validation.constraints.NotNull;
 public class LivroRequest {
     @NotBlank(message = "Título é obrigatório")
     private String titulo;
-    @NotBlank(message = "Autor é obrigatório")
-    private String autor;
+    @NotNull(message = "Id do autor é obrigatório")
+    private Long autorId;
     @NotNull(message = "Status é obrigatório")
     private StatusLivro status;
 
@@ -16,8 +16,8 @@ public class LivroRequest {
         return titulo;
     }
 
-    public String getAutor() {
-        return autor;
+    public Long getAutorId() {
+        return autorId;
     }
     
     public StatusLivro getStatus() {
@@ -28,8 +28,8 @@ public class LivroRequest {
         this.titulo = titulo;
     }
 
-    public void setAutor(String autor) {
-        this.autor = autor;
+    public void setAutorId(Long autorId) {
+        this.autorId = autorId;
     }
     
     public void setStatus(StatusLivro status) {
